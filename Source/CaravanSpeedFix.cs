@@ -29,7 +29,6 @@ namespace CaravanSpeedFix
         [HarmonyPrefix]
         public static bool CostToMove_Prefix(ref int caravanTicksPerMove, ref int __state)
         {
-            Log.Message("Current caravanTicksPerMove = " + caravanTicksPerMove);
             __state = caravanTicksPerMove;
 
             caravanTicksPerMove = CaravanTicksPerMoveUtility.DefaultTicksPerMove; //override with default value. Yeah, this is hacking, I know.
@@ -40,10 +39,7 @@ namespace CaravanSpeedFix
         [HarmonyPostfix]
         public static void CostToMove_Postfix(int caravanTicksPerMove, ref int __result, int __state)
         {
-            Log.Message("_state = " + __state);
-            Log.Message("before _result = " + __result);
-            __result = Mathf.RoundToInt((float)__result * ((float)__state / CaravanTicksPerMoveUtility.DefaultTicksPerMove)); //multiply by the acceleration coefficient
-            Log.Message("after _result = " + __result);
+            __result = Mathf.RoundToInt(__result * ((float)__state / CaravanTicksPerMoveUtility.DefaultTicksPerMove)); //multiply by the acceleration coefficient
         }
     }
 
@@ -64,11 +60,9 @@ namespace CaravanSpeedFix
                         roadMultiplier = Mathf.Min(roadMultiplier, tile.roads[i].road.movementCostMultiplier);
                     }
                 }
-                Log.Message("before _result = " + __result);
-                __result += Mathf.RoundToInt(roadMultiplier * (float)(CaravanTicksPerMoveUtility.DefaultTicksPerMove - caravan.TicksPerMove)); //add the missing part of the default TicksPerMove
+                __result += Mathf.RoundToInt(roadMultiplier * (CaravanTicksPerMoveUtility.DefaultTicksPerMove - caravan.TicksPerMove)); //add the missing part of the default TicksPerMove
 
-                __result = Mathf.RoundToInt((float)__result * ((float)caravan.TicksPerMove / CaravanTicksPerMoveUtility.DefaultTicksPerMove)); //multiply by the acceleration coefficient
-                Log.Message("after _result = " + __result);
+                __result = Mathf.RoundToInt(__result * ((float)caravan.TicksPerMove / CaravanTicksPerMoveUtility.DefaultTicksPerMove)); //multiply by the acceleration coefficient
             }
         }
     }
